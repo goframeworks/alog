@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/goframeworks/alog"
 	"github.com/goframeworks/alog/azap"
@@ -64,8 +65,35 @@ func AZapExample3() {
 	logger.Fatal("this is azap example3", zap.String(alog.FieldKey_TraceID, traceId))
 }
 
+func AzapLevelReload() {
+	traceId := "be0c950e-bd99-44dd-9d68-d7d494b62276"
+	logger, err := azap.NewLogger("azap-level-reload",
+		azap.WithLogLevel(zapcore.DebugLevel),
+		azap.WithWriter(os.Stderr),
+		azap.WithStructuredFormat(false),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		for {
+			logger.Debug("debug message", zap.String(alog.FieldKey_TraceID, traceId))
+			logger.Info("info message", zap.String(alog.FieldKey_TraceID, traceId))
+			time.Sleep(time.Second)
+		}
+	}()
+
+	time.Sleep(3 * time.Second)
+	if err := logger.HotReloadLogLevel(zapcore.InfoLevel); err != nil {
+		panic(err)
+	}
+	time.Sleep(3 * time.Second)
+}
+
 func main() {
-	AZapExample1()
+	//AZapExample1()
 	//AZapExample2()
 	//AZapExample3()
+	AzapLevelReload()
 }
