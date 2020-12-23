@@ -1,8 +1,9 @@
 // +build unittest
 
-package alog
+package azap
 
 import (
+	"os"
 	"testing"
 
 	"go.uber.org/zap"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestFactory_ZapLogger(t *testing.T) {
-	logger, err := NewFactory().ZapLogger(t.Name(), zapcore.DebugLevel, false)
+	logger, err := NewLogger(t.Name(), WithLogLevel(zapcore.DebugLevel), WithWriter(os.Stderr), WithStructuredFormat(false))
 	if err != nil {
 		t.Fatalf("new logger failed, %v", err)
 	}
@@ -21,7 +22,7 @@ func TestFactory_ZapLogger(t *testing.T) {
 
 	////////////////////////////////////////////////////////////////////////////
 
-	logger, err = NewFactory().ZapLogger(t.Name(), zapcore.WarnLevel, true)
+	logger, err = NewLogger(t.Name(), WithLogLevel(zapcore.WarnLevel), WithWriter(os.Stderr), WithStructuredFormat(true))
 	if err != nil {
 		t.Fatalf("new logger failed, %v", err)
 	}
